@@ -17,8 +17,12 @@ Conner Fissell     02-21-2021         1.0  Original version
 #include <sys/stat.h> 
 #include <sys/types.h> 
 #include <string>
+#include <cstring>
+#include <cstdlib>
 
 #include <stdio.h>
+#include <unistd.h>
+
 
 
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
@@ -27,8 +31,9 @@ Conner Fissell     02-21-2021         1.0  Original version
 // #pragma warning(disable : 4996)
 
 // Prototypes
-void RNG(int treeNums[], int range);
-void visit(int &num);
+// void RNG(int treeNums[], int range);
+// void visit(int &num);
+
 /* -----------------------------------------------------------------------------
 FUNCTION:          
 DESCRIPTION:       
@@ -47,24 +52,27 @@ int main(int argc, char* argv[])
 
      // Create a directory
      const char* testString = "test";
-     if (mkdir(testString, 0777) == -1){
-          std::cout << "Error creating Directory\n";
-     }
-     else {
-          std::cout << "directory created\n";
-     }
+     // if (mkdir(testString, 0777) == -1){
+     //      std::cout << "Error creating Directory\n";
+     // }
+     // else {
+     //      std::cout << "directory created\n";
+     // }
           
      
 
-     // Remove an empty directory?
+     // Remove an empty directory
+     //int removed = rmdir("test");
 
 
 
 
+     // Remove a directory with files in it
+     std::string s(testString);
+     std::string x = "rm -r " + s;
+     system(x.c_str());
 
-
-
-
+     
 
 
 
