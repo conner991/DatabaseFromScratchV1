@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
 
 
      // Create a directory
-     const char* testString = "test";
+     //const char* testString = "test";
      // if (mkdir(testString, 0777) == -1){
      //      std::cout << "Error creating Directory\n";
      // }
@@ -87,9 +87,9 @@ int main(int argc, char* argv[])
 
 
      // Remove a directory with files in it
-     std::string s(testString);
-     std::string x = "rm -r " + s;
-     system(x.c_str());
+     // std::string s(testString);
+     // std::string x = "rm -r " + s;
+     // system(x.c_str());
 
      
 
@@ -168,5 +168,45 @@ bool inputParser(std::string input, bool &running)
           return running;
      }
 
+     std::vector<std::string> inputChunks;
+     std::string string1, string2, string3;
+     int spacePosition, numOfSpaces = 0, numOfWords; 
+
+     // Find the number of spaces in the input
+     for(int i = 0; i < input.length(); i++) {
+          if (input.at(i) == ' ')
+               ++numOfSpaces;
+     }
+
+     // If there are multiple words in the input
+     if (!numOfSpaces == 0) {
+          
+          // Finds the first space in a string and gives us its position number
+          spacePosition = input.find(' ', 1);
+          std::cout << spacePosition << std::endl;
+
+          // Creates a string out of the first part of the input
+          string1.assign(input, 0, spacePosition);
+          std::cout << string1 << std::endl;
+     }
+
+     // There is only one word in the input
+     else {
+          std::cout << numOfSpaces << std::endl;
+     }
+
      
+      
+
+
+
+     
+
+
+
+
+
+
+     return running;
+
 }

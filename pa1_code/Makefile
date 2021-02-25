@@ -38,3 +38,6 @@ postfix: Node.o postfix.o
 
 %.o: %.cpp link_list.cpp
 	g++ -c $< -std=c++11
+
+clean:
+	rm -f pa1Driver
