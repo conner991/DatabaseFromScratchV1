@@ -19,6 +19,7 @@ Conner Fissell     02-21-2021         1.0  Original version
 #include <string>
 #include <cstring>
 #include <cstdlib>
+#include <vector>
 
 #include <stdio.h>
 #include <unistd.h>
@@ -33,6 +34,7 @@ Conner Fissell     02-21-2021         1.0  Original version
 // Prototypes
 // void RNG(int treeNums[], int range);
 // void visit(int &num);
+bool inputParser(std::string inputLine, bool &running);
 
 /* -----------------------------------------------------------------------------
 FUNCTION:          
@@ -44,6 +46,23 @@ int main(int argc, char* argv[])
 {
 
      std::fstream file;
+
+
+     bool running = true; 
+     std::string inputLine;
+
+     // Enter SQL Mode
+     while (running) {
+          std::cout << "--> ";
+          std::getline(std::cin, inputLine);
+          running = inputParser(inputLine, running);
+     }
+
+
+
+
+
+
 
 
 
@@ -89,14 +108,17 @@ int main(int argc, char* argv[])
 
 
           // string temp;
-          //   if(INTERACTIVE == -1){//if not in interactive mode but INTERACTIVE == -1, it awits for the user to hit enter between each command, but otherwise goes through the file as normal
+          //   if(INTERACTIVE == -1)
+          //   {//if not in interactive mode but INTERACTIVE == -1, it awits for the user to hit enter between each command, but otherwise goes through the file as normal
           //       cout << "Waiting...";
           //       cin.ignore();
           //   }
+
           //   //To get the proper file i want to readline until the last chunk is a ;
           //   //Ignore line if the first 2 characters are --
             
-          //   if(sql.is_open()){
+          //   if(sql.is_open())
+          //   {
 
           //       while(temp[temp.length()-1] != ';' && lowerCase(temp)!=".exit"){
           //           sql>>temp;
@@ -132,46 +154,19 @@ int main(int argc, char* argv[])
 
 }
 
-// /* -----------------------------------------------------------------------------
-// FUNCTION:          
-// DESCRIPTION:       
-// RETURNS:           
-// NOTES:             
-// ------------------------------------------------------------------------------- */
-// void RNG(int treeNums[], int range)
-// {
+/* -----------------------------------------------------------------------------
+FUNCTION:          
+DESCRIPTION:       
+RETURNS:           
+NOTES:             
+------------------------------------------------------------------------------- */
+bool inputParser(std::string input, bool &running)
+{
+     // on exit, add edge cases here
+     if (input == ".exit"){
+          running = false;
+          return running;
+     }
 
-//     //RNG
-//     unsigned seed = time(0);
-//     srand(seed);
-
-//     for (int i = 0; i < range; i++)
-//     {
-//         treeNums[i] = (rand() % range) + 1;
-//     }
-// }
-
-// /* -----------------------------------------------------------------------------
-// FUNCTION:          
-// DESCRIPTION:       
-// RETURNS:           
-// NOTES:             
-// ------------------------------------------------------------------------------- */
-// void visit(int &num)
-// {
-//     std::cout << num << std::endl;
-// }
-
-// /* -----------------------------------------------------------------------------
-// FUNCTION:          
-// DESCRIPTION:       
-// RETURNS:           
-// NOTES:             
-// ------------------------------------------------------------------------------- */
-
-// /* -----------------------------------------------------------------------------
-// FUNCTION:          
-// DESCRIPTION:       
-// RETURNS:           
-// NOTES:             
-// ------------------------------------------------------------------------------- */
+     
+}

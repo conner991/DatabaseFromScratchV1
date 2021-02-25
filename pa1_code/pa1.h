@@ -1,6 +1,6 @@
 /* -----------------------------------------------------------------------------
 FILE NAME:         
-DESCRIPTION:        ADT binary tree: Link-based implementation. 
+DESCRIPTION:        
 USAGE:             
 COMPILER:          GNU g++ compiler on Linux
 NOTES:             
@@ -16,8 +16,11 @@ Conner Fissell     **-**-2020         1.0  Original version
 #include "pa1Interface.h"
 
 
+template <class DT>
+class DataEntry {
+     
 
-
+};
 
 
 
