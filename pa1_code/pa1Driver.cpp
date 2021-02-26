@@ -32,10 +32,8 @@ Conner Fissell     02-21-2021         1.0  Original version
 // #pragma warning(disable : 4996)
 
 // Prototypes
-// void RNG(int treeNums[], int range);
-// void visit(int &num);
-bool inputParser(std::string inputLine, std::vector<std::string> &words, bool &running);
-
+bool inputParser(std::string inputLine, std::vector<std::string> &wordVector, bool &running);
+void wordDecider(std::vector<std::string> &words);
 /* -----------------------------------------------------------------------------
 FUNCTION:          
 DESCRIPTION:       
@@ -50,19 +48,21 @@ int main(int argc, char* argv[])
 
      bool running = true; 
      std::string inputLine;
-     std::vector<std::string> inputWords;
+     std::vector<std::string> wordVector;
 
      // Enter SQL Mode
      while (running) {
           std::cout << "--> ";
           std::getline(std::cin, inputLine);
-          running = inputParser(inputLine, inputWords, running);
+          running = inputParser(inputLine, wordVector, running);
 
-          for (int i = 0; i < inputWords.size(); i++) {
-               std::cout << inputWords[i] << std::endl;
+          // If .exit was not entered, move forward in program
+          if (!wordVector.size() == 0) {
+               wordDecider(wordVector);
           }
-
-          inputWords.clear();
+          
+          // clear vector of input strings after each SQL command
+          wordVector.clear();
      }
 
 
@@ -150,16 +150,12 @@ DESCRIPTION:
 RETURNS:           
 NOTES:             
 ------------------------------------------------------------------------------- */
-bool inputParser(std::string input, std::vector<std::string> &inputWords, bool &running)
+bool inputParser(std::string input, std::vector<std::string> &wordVector, bool &running)
 {    
      std::string word, string2, string3;
      int spacePosition, numOfSpaces = 0, numOfWords; 
 
-     // on exit, add edge cases here
-     if (input == ".exit"){
-          running = false;
-          return running;
-     }
+     
 
      // Find the number of spaces in the input
      for(int i = 0; i < input.length(); i++) {
@@ -181,7 +177,7 @@ bool inputParser(std::string input, std::vector<std::string> &inputWords, bool &
                word.assign(input, 0, spacePosition);
                
                // Adds word to the string vector
-               inputWords.push_back(word);
+               wordVector.push_back(word);
 
                // Need to modify input string to capture the rest of the input words
                input.erase(0, spacePosition + 1);
@@ -190,18 +186,71 @@ bool inputParser(std::string input, std::vector<std::string> &inputWords, bool &
           
      }
 
-     // There is only one word in the input
+     // There is only one word in the input and it should be .EXIT
      else {
-          inputWords.push_back(input);
+
+          // Add single string to vector
+          wordVector.push_back(input);
+
+          // Make any letters in it lowercase
+          std::transform(wordVector[0].begin(), wordVector[0].end(), wordVector[0].begin(), ::tolower);
+
+          if (wordVector[0] == ".exit") {
+               wordVector.clear();
+               running = false;
+               return running;
+          }
+
+          else {
+               wordVector.clear();
+               std::cout << "Unknow Entry\n";
+          }
+
+          
      }
-
-     
-     
-
-
-
 
 
      return running;
+
+}
+
+/* -----------------------------------------------------------------------------
+FUNCTION:          
+DESCRIPTION:       
+RETURNS:           
+NOTES:             
+------------------------------------------------------------------------------- */
+void wordDecider(std::vector<std::string> &words) 
+{
+     // Make all letters in vector of string words lowercase
+     for (int i = 0; i < words.size(); i++){
+          std::transform(words[i].begin(), words[i].end(), words[i].begin(), ::tolower);
+          //std::cout << words[i] << std::endl;
+     }
+
+     // Check first word in vector to see if it is one of the beginning SQL keywords
+     if (words[0] == "create" || words[0] == "drop" || words[0] == "use" || words[0] == "select" || words[0] == "alter") {
+          
+          if (words[0] == "create"){
+               
+               // then we're either gonna create a database or a table (one of those SQL keywords will follow)
+               if (words[1] == "database") {
+                    std::cout << "Creating database\n";
+               }
+
+               else if (words[1] == "table") {
+                    std::cout << "Creating table\n";
+               }
+
+               else {
+                    std::cout << "Unknown Entry\n";
+               }
+          }
+     }
+
+     else {
+          std::cout << "Unknown Entry\n";
+     }
+     
 
 }

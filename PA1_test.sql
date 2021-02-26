@@ -50,3 +50,4 @@ SELECT * FROM tbl_1;
 -- Table tbl_1 created.
 -- a3 float | a4 char(20)
 -- All done.
+-- really done
