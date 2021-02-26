@@ -34,7 +34,7 @@ Conner Fissell     02-21-2021         1.0  Original version
 // Prototypes
 // void RNG(int treeNums[], int range);
 // void visit(int &num);
-bool inputParser(std::string inputLine, bool &running);
+bool inputParser(std::string inputLine, std::vector<std::string> &words, bool &running);
 
 /* -----------------------------------------------------------------------------
 FUNCTION:          
@@ -50,12 +50,19 @@ int main(int argc, char* argv[])
 
      bool running = true; 
      std::string inputLine;
+     std::vector<std::string> inputWords;
 
      // Enter SQL Mode
      while (running) {
           std::cout << "--> ";
           std::getline(std::cin, inputLine);
-          running = inputParser(inputLine, running);
+          running = inputParser(inputLine, inputWords, running);
+
+          for (int i = 0; i < inputWords.size(); i++) {
+               std::cout << inputWords[i] << std::endl;
+          }
+
+          inputWords.clear();
      }
 
 
@@ -135,23 +142,6 @@ int main(int argc, char* argv[])
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
 
 /* -----------------------------------------------------------------------------
@@ -160,17 +150,16 @@ DESCRIPTION:
 RETURNS:           
 NOTES:             
 ------------------------------------------------------------------------------- */
-bool inputParser(std::string input, bool &running)
-{
+bool inputParser(std::string input, std::vector<std::string> &inputWords, bool &running)
+{    
+     std::string word, string2, string3;
+     int spacePosition, numOfSpaces = 0, numOfWords; 
+
      // on exit, add edge cases here
      if (input == ".exit"){
           running = false;
           return running;
      }
-
-     std::vector<std::string> inputChunks;
-     std::string string1, string2, string3;
-     int spacePosition, numOfSpaces = 0, numOfWords; 
 
      // Find the number of spaces in the input
      for(int i = 0; i < input.length(); i++) {
@@ -181,27 +170,33 @@ bool inputParser(std::string input, bool &running)
      // If there are multiple words in the input
      if (!numOfSpaces == 0) {
           
-          // Finds the first space in a string and gives us its position number
-          spacePosition = input.find(' ', 1);
-          std::cout << spacePosition << std::endl;
+          numOfWords = numOfSpaces + 1;
+          
+          for (int i = 0; i < numOfWords; i++) {
+               
+               // Finds the first space in a string and gives us its position number
+               spacePosition = input.find(' ', 1);
 
-          // Creates a string out of the first part of the input
-          string1.assign(input, 0, spacePosition);
-          std::cout << string1 << std::endl;
+               // Creates a string out of the first part of the input
+               word.assign(input, 0, spacePosition);
+               
+               // Adds word to the string vector
+               inputWords.push_back(word);
+
+               // Need to modify input string to capture the rest of the input words
+               input.erase(0, spacePosition + 1);
+
+          } 
+          
      }
 
      // There is only one word in the input
      else {
-          std::cout << numOfSpaces << std::endl;
+          inputWords.push_back(input);
      }
 
      
-      
-
-
-
      
-
 
 
 
