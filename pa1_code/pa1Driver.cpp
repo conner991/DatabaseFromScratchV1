@@ -64,26 +64,6 @@ int main(int argc, char* argv[])
           // clear vector of input strings after each SQL command
           wordVector.clear();
      }
-
-
-
-
-
-
-
-
-
-
-
-
-     // Create a directory
-     //const char* testString = "test";
-     // if (mkdir(testString, 0777) == -1){
-     //      std::cout << "Error creating Directory\n";
-     // }
-     // else {
-     //      std::cout << "directory created\n";
-     // }
           
      
 
@@ -93,53 +73,9 @@ int main(int argc, char* argv[])
 
 
 
-     // Remove a directory with files in it
-     // std::string s(testString);
-     // std::string x = "rm -r " + s;
-     // system(x.c_str());
-
      
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          // string temp;
-          //   if(INTERACTIVE == -1)
-          //   {//if not in interactive mode but INTERACTIVE == -1, it awits for the user to hit enter between each command, but otherwise goes through the file as normal
-          //       cout << "Waiting...";
-          //       cin.ignore();
-          //   }
-
-          //   //To get the proper file i want to readline until the last chunk is a ;
-          //   //Ignore line if the first 2 characters are --
-            
-          //   if(sql.is_open())
-          //   {
-
-          //       while(temp[temp.length()-1] != ';' && lowerCase(temp)!=".exit"){
-          //           sql>>temp;
-          //           if(temp.substr(0,2) != "--"){   //to make sure we dont get comments
-          //               input += temp + ' ';
-          //           }
-          //           else getline(sql, temp);//and if we do get comments we can get rid of it by going to the next line
-          //       }
-          //       if(INTERACTIVE == -1) cout << input << endl;//and if in -1 mode, it reads off the command given
-          //   }
-
-
-
-
+     
 
 
 }
@@ -155,59 +91,75 @@ bool inputParser(std::string input, std::vector<std::string> &wordVector, bool &
      std::string word, string2, string3;
      int spacePosition, numOfSpaces = 0, numOfWords; 
 
+
+     // Make any letters in input string lowercase
+     std::transform(input.begin(), input.end(), input.begin(), ::tolower);
      
-
-     // Find the number of spaces in the input
-     for(int i = 0; i < input.length(); i++) {
-          if (input.at(i) == ' ')
+     // Check to make sure there is a semicolon at the end of the statement
+     if (input.back() == ';' || input == ".exit") {
+          
+          // Find the number of spaces in the input
+          for(int i = 0; i < input.length(); i++) {
+               if (input.at(i) == ' ')
                ++numOfSpaces;
-     }
-
-     // If there are multiple words in the input
-     if (!numOfSpaces == 0) {
+          }
+     
+     
+          // If there are multiple words in the input
+          if (numOfSpaces != 0) {
           
-          numOfWords = numOfSpaces + 1;
-          
-          for (int i = 0; i < numOfWords; i++) {
+               numOfWords = numOfSpaces + 1;
                
-               // Finds the first space in a string and gives us its position number
-               spacePosition = input.find(' ', 1);
+               for (int i = 0; i < numOfWords; i++) {
+                    
+                    // Finds the first space in a string and gives us its position number
+                    spacePosition = input.find(' ', 1);
 
-               // Creates a string out of the first part of the input
-               word.assign(input, 0, spacePosition);
-               
-               // Adds word to the string vector
-               wordVector.push_back(word);
+                    // Creates a string out of the first part of the input
+                    word.assign(input, 0, spacePosition);
+                    
+                    // Adds word to the string vector
+                    wordVector.push_back(word);
 
-               // Need to modify input string to capture the rest of the input words
-               input.erase(0, spacePosition + 1);
-
-          } 
-          
-     }
-
-     // There is only one word in the input and it should be .EXIT
-     else {
-
-          // Add single string to vector
-          wordVector.push_back(input);
-
-          // Make any letters in it lowercase
-          std::transform(wordVector[0].begin(), wordVector[0].end(), wordVector[0].begin(), ::tolower);
-
-          if (wordVector[0] == ".exit") {
-               wordVector.clear();
-               running = false;
-               return running;
+                    // Need to modify input string to capture the rest of the input words
+                    input.erase(0, spacePosition + 1);
+               }
+           
           }
 
+
+          
+          // There is only one word in the input and it should be .EXIT
           else {
-               wordVector.clear();
-               std::cout << "Unknow Entry\n";
+
+               // Add single string to vector
+               wordVector.push_back(input);
+
+               if (wordVector[0] == ".exit") {
+                    wordVector.clear();
+                    running = false;
+                    return running;
+               }
+
+               else {
+                    wordVector.clear();
+                    std::cout << "Unknow Entry\n";
+               }
+
+          
           }
+
+
 
           
      }
+
+     else {
+          std::cout << "Input statement must end with a semicolon.\n";
+     }
+          
+
+     
 
 
      return running;
@@ -231,38 +183,53 @@ void wordDecider(std::vector<std::string> &wordVector)
           std::transform(wordVector[i].begin(), wordVector[i].end(), wordVector[i].begin(), ::tolower);
      }
 
+
+
      // Check first word in vector to see if it is one of the beginning SQL keywords
      if (wordVector[0] == "create" || wordVector[0] == "drop" || wordVector[0] == "use" || wordVector[0] == "select" || wordVector[0] == "alter") {
           
           if (wordVector[0] == "create") {
                
-               // then we're either gonna create a DATABASE = db_x or a TABLE = tbl_x (one of those SQL keywords will follow)
+               // then we're either gonna create a DATABASE or a TABLE (one of those SQL keywords will follow)
+               
+               // CREATE DATABASE
                if (wordVector[1] == "database") {
 
                     // Theres going to be a ";" at the end of our database name that we need to get rid of
                     oldSize = wordVector[2].size();
                     newSize = oldSize - 1;
                     wordVector[2].resize(newSize);
-                    std::cout << wordVector[2] << " database created\n";
 
-                    // Now create a database with wordVector[2]
-
-               }
-
-               else if (wordVector[1] == "table") {
-                    std::cout << "Creating tbl_x\n";
-
-                    // Create tbl_x out of wordVector[2]
-
-                    // Check if there is an "ADD" or a "(" following tbl_x
-                    frontOfString = wordVector[3].front();
-                    if (wordVector[3] == "add" || frontOfString == '('){
-                         std::cout << " ADDing attribute(ax) to datatype OR reading a parenthetical statement\n";
-                         // now to work on the attributes = ax
+                    // Now create a database with wordVector[2] by creating a directory in our project
+                    const char* dbName = wordVector[2].c_str();
+                    
+                    if (mkdir(dbName, 0777) == -1) {
+                         std::cout << "Error creating Database\n";
                     }
 
                     else {
-                         std::cout << "ADD keyword or parenthetical expression must follow\n";
+                         std::cout << "Database " << wordVector[2] << " created.\n";
+                    }
+
+               }
+
+               // CREATE TABLE
+               else if (wordVector[1] == "table") {
+                    
+                    // Create tbl_x out of wordVector[2]
+
+                    std::cout << "Table " << wordVector[2] << " created.\n";
+
+                    // Check if there is a "(" following tbl_x
+                    frontOfString = wordVector[3].front();
+                    if (frontOfString == '('){
+                         std::cout << "reading a parenthetical statement\n";
+                         
+                         // now to work on the attributes = ax within parenthesis
+                    }
+
+                    else {
+                         std::cout << "parenthetical expression must follow tbl_x\n";
                     }
 
                     
@@ -273,36 +240,83 @@ void wordDecider(std::vector<std::string> &wordVector)
                }
           }
 
+
+
           if (wordVector[0] == "drop"){
                
-               // Same as "create" except we're either gonna drop a created database or a table
+               // Same as "CREATE" except we're either gonna drop a created database or a table
+
+               // DROP DATABASE
                if (wordVector[1] == "database") {
-                    std::cout << "Dropping db_x\n";
+                    
+                    // Theres going to be a ";" at the end of our database name that we need to get rid of
+                    oldSize = wordVector[2].size();
+                    newSize = oldSize - 1;
+                    wordVector[2].resize(newSize);
+
+                    // Now delete wordVector[2] database, Removes a directory with files in it
+                    std::string s(wordVector[2]);
+                    std::string x = "rm -r " + s;
+                    system(x.c_str());
+                    std::cout << "Database " << wordVector[2] << " deleted.\n";
                }
 
+               // DROP TABLE
                else if (wordVector[1] == "table") {
-                    std::cout << "Dropping tbl_x\n";
+                    
+                    // Theres going to be a ";" at the end of our table name that we need to get rid of
+                    oldSize = wordVector[2].size();
+                    newSize = oldSize - 1;
+                    wordVector[2].resize(newSize);
+                    std::cout << "Table " << wordVector[2] << " deleted.\n";
+
+                    // Now delete wordVector[2] table
                }
 
                else {
-                    std::cout << "DATABASE or TABLE must follow\n";
+                    std::cout << "DATABASE or TABLE must follow DROP.\n";
                }
           }
 
+
+
           if (wordVector[0] == "use"){
      
-               // Next word after "use" is a database name
-               std::cout << wordVector[1] << " is the name of our database\n";
+               // Next word after "USE" is a database name with ;
+
+               // Theres going to be a ";" at the end of our database name that we need to get rid of
+               oldSize = wordVector[1].size();
+               newSize = oldSize - 1;
+               wordVector[1].resize(newSize);
+               std::cout << "Using database " << wordVector[1] << ".\n";
+
+               // USE our database wordVector[1] and check to see if we are already using it if this happens again
+               
           }
 
-          if (wordVector[0] == "select"){
+
+
+          if (wordVector[0] == "select") {
+ 
+               // SELECT is always going to be followed by an action performed on a table
                
-               // Next word after "select" should be an *
+               // Next word after SELECT should be an *
                if (wordVector[1] == "*") {
+
+                    // Here we're going to SELECT all of the attributes from our table
+
 
                     // Using FROM after *
                     if (wordVector[2] == "from") {
-                         std::cout << "selecting ALL attributes FROM created tbl_x \n";
+                         std::cout << "selecting ALL attributes FROM created tbl_x\n";
+
+                         // Display all of the attributes (columns) of tbl_x (wordVector[3])
+
+                         // Theres going to be a ";" at the end of our table name that we need to get rid of
+                         oldSize = wordVector[3].size();
+                         newSize = oldSize - 1;
+                         wordVector[3].resize(newSize);
+                         std::cout << "Display attributes (columns) of " << wordVector[3] << " here\n";
                     }
 
                     else {
@@ -316,11 +330,25 @@ void wordDecider(std::vector<std::string> &wordVector)
                
           }
 
+
+
           if (wordVector[0] == "alter"){
                
                // Next word after "alter" is only ever going to be a SQL table keyword and that must be a created table
                if (wordVector[1] == "table") {
-                    std::cout << "ALTERing TABLE tbl_x\n";
+
+                    // ALTER is only ever going to work with a created table
+                    
+                    
+                    if (wordVector[3] == "add") {
+                         
+                         // attribute name (wordVector[4]) and datatype (wordVector[5] with a semicolon) are entered here
+                         // add attribute to tbl_x here
+
+                         std::cout << "Table " << wordVector[2] << " modified.\n";
+                    }
+
+                    
                }
 
                else {
