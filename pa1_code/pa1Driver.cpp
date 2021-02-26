@@ -33,7 +33,7 @@ Conner Fissell     02-21-2021         1.0  Original version
 
 // Prototypes
 bool inputParser(std::string inputLine, std::vector<std::string> &wordVector, bool &running);
-void wordDecider(std::vector<std::string> &words);
+void wordDecider(std::vector<std::string> &wordVector);
 /* -----------------------------------------------------------------------------
 FUNCTION:          
 DESCRIPTION:       
@@ -220,31 +220,113 @@ DESCRIPTION:
 RETURNS:           
 NOTES:             
 ------------------------------------------------------------------------------- */
-void wordDecider(std::vector<std::string> &words) 
-{
+void wordDecider(std::vector<std::string> &wordVector) 
+{    
+     int oldSize, newSize;
+     char frontOfString;
+
+
      // Make all letters in vector of string words lowercase
-     for (int i = 0; i < words.size(); i++){
-          std::transform(words[i].begin(), words[i].end(), words[i].begin(), ::tolower);
-          //std::cout << words[i] << std::endl;
+     for (int i = 0; i < wordVector.size(); i++){
+          std::transform(wordVector[i].begin(), wordVector[i].end(), wordVector[i].begin(), ::tolower);
      }
 
      // Check first word in vector to see if it is one of the beginning SQL keywords
-     if (words[0] == "create" || words[0] == "drop" || words[0] == "use" || words[0] == "select" || words[0] == "alter") {
+     if (wordVector[0] == "create" || wordVector[0] == "drop" || wordVector[0] == "use" || wordVector[0] == "select" || wordVector[0] == "alter") {
           
-          if (words[0] == "create"){
+          if (wordVector[0] == "create") {
                
-               // then we're either gonna create a database or a table (one of those SQL keywords will follow)
-               if (words[1] == "database") {
-                    std::cout << "Creating database\n";
+               // then we're either gonna create a DATABASE = db_x or a TABLE = tbl_x (one of those SQL keywords will follow)
+               if (wordVector[1] == "database") {
+
+                    // Theres going to be a ";" at the end of our database name that we need to get rid of
+                    oldSize = wordVector[2].size();
+                    newSize = oldSize - 1;
+                    wordVector[2].resize(newSize);
+                    std::cout << wordVector[2] << " database created\n";
+
+                    // Now create a database with wordVector[2]
+
                }
 
-               else if (words[1] == "table") {
-                    std::cout << "Creating table\n";
+               else if (wordVector[1] == "table") {
+                    std::cout << "Creating tbl_x\n";
+
+                    // Create tbl_x out of wordVector[2]
+
+                    // Check if there is an "ADD" or a "(" following tbl_x
+                    frontOfString = wordVector[3].front();
+                    if (wordVector[3] == "add" || frontOfString == '('){
+                         std::cout << " ADDing attribute(ax) to datatype OR reading a parenthetical statement\n";
+                         // now to work on the attributes = ax
+                    }
+
+                    else {
+                         std::cout << "ADD keyword or parenthetical expression must follow\n";
+                    }
+
+                    
                }
 
                else {
-                    std::cout << "Unknown Entry\n";
+                    std::cout << "DATABASE or TABLE must follow CREATE\n";
                }
+          }
+
+          if (wordVector[0] == "drop"){
+               
+               // Same as "create" except we're either gonna drop a created database or a table
+               if (wordVector[1] == "database") {
+                    std::cout << "Dropping db_x\n";
+               }
+
+               else if (wordVector[1] == "table") {
+                    std::cout << "Dropping tbl_x\n";
+               }
+
+               else {
+                    std::cout << "DATABASE or TABLE must follow\n";
+               }
+          }
+
+          if (wordVector[0] == "use"){
+     
+               // Next word after "use" is a database name
+               std::cout << wordVector[1] << " is the name of our database\n";
+          }
+
+          if (wordVector[0] == "select"){
+               
+               // Next word after "select" should be an *
+               if (wordVector[1] == "*") {
+
+                    // Using FROM after *
+                    if (wordVector[2] == "from") {
+                         std::cout << "selecting ALL attributes FROM created tbl_x \n";
+                    }
+
+                    else {
+                         std::cout << "FROM must follow *\n";
+                    }
+               }
+          
+               else {
+                    std::cout << wordVector[1] << " doesn't work with SELECT\n";
+               }
+               
+          }
+
+          if (wordVector[0] == "alter"){
+               
+               // Next word after "alter" is only ever going to be a SQL table keyword and that must be a created table
+               if (wordVector[1] == "table") {
+                    std::cout << "ALTERing TABLE tbl_x\n";
+               }
+
+               else {
+                    std::cout << "Must be TABLE keyword\n";
+               }
+               
           }
      }
 
