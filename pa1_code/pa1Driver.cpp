@@ -11,18 +11,6 @@ Author             Date               Version
 Conner Fissell     02-21-2021         1.0  Original version
 ----------------------------------------------------------------------------- */
 #include "pa1.h"
-#include <iostream>
-#include <fstream>
-#include <bits/stdc++.h> 
-#include <sys/stat.h> 
-#include <sys/types.h> 
-#include <string>
-#include <cstring>
-#include <cstdlib>
-#include <vector>
-
-#include <stdio.h>
-#include <unistd.h>
 
 
 
@@ -33,7 +21,11 @@ Conner Fissell     02-21-2021         1.0  Original version
 
 // Prototypes
 bool inputParser(std::string inputLine, std::vector<std::string> &wordVector, bool &running);
-void wordDecider(std::vector<std::string> &wordVector);
+void wordDecider(std::vector<std::string> &wordVector, std::vector<std::string> &databaseVector);
+void createDB(std::string dbName, std::vector<std::string> &databases, int &dbCount);
+void deleteDB(std::string name, std::vector<std::string> &databases, int &dbCount);
+void createTable();
+void deleteTable();
 /* -----------------------------------------------------------------------------
 FUNCTION:          
 DESCRIPTION:       
@@ -48,7 +40,7 @@ int main(int argc, char* argv[])
 
      bool running = true; 
      std::string inputLine;
-     std::vector<std::string> wordVector;
+     std::vector<std::string> wordVector, databaseVector;
 
      // Enter SQL Mode
      while (running) {
@@ -57,8 +49,8 @@ int main(int argc, char* argv[])
           running = inputParser(inputLine, wordVector, running);
 
           // If .exit was not entered, move forward in program
-          if (!wordVector.size() == 0) {
-               wordDecider(wordVector);
+          if (wordVector.size() != 0) {
+               wordDecider(wordVector, databaseVector);
           }
           
           // clear vector of input strings after each SQL command
@@ -172,10 +164,12 @@ DESCRIPTION:
 RETURNS:           
 NOTES:             
 ------------------------------------------------------------------------------- */
-void wordDecider(std::vector<std::string> &wordVector) 
+void wordDecider(std::vector<std::string> &wordVector, std::vector<std::string> &databaseVector) 
 {    
-     int oldSize, newSize;
+     int oldSize, newSize, dbCount = 0;
      char frontOfString;
+     
+
 
 
      // Make all letters in vector of string words lowercase
@@ -199,17 +193,10 @@ void wordDecider(std::vector<std::string> &wordVector)
                     oldSize = wordVector[2].size();
                     newSize = oldSize - 1;
                     wordVector[2].resize(newSize);
-
-                    // Now create a database with wordVector[2] by creating a directory in our project
-                    const char* dbName = wordVector[2].c_str();
                     
-                    if (mkdir(dbName, 0777) == -1) {
-                         std::cout << "Error creating Database\n";
-                    }
-
-                    else {
-                         std::cout << "Database " << wordVector[2] << " created.\n";
-                    }
+                    // Call createDB function to create DB
+                    std::string dbName1 = wordVector[2];
+                    createDB(dbName1, databaseVector, dbCount);
 
                }
 
@@ -254,11 +241,10 @@ void wordDecider(std::vector<std::string> &wordVector)
                     newSize = oldSize - 1;
                     wordVector[2].resize(newSize);
 
-                    // Now delete wordVector[2] database, Removes a directory with files in it
-                    std::string s(wordVector[2]);
-                    std::string x = "rm -r " + s;
-                    system(x.c_str());
-                    std::cout << "Database " << wordVector[2] << " deleted.\n";
+                    // Call deleteDB function to delete wordVector[2] database name
+                    std::string dbName2 = wordVector[2];
+                    deleteDB(dbName2, databaseVector, dbCount);
+                    
                }
 
                // DROP TABLE
@@ -268,9 +254,10 @@ void wordDecider(std::vector<std::string> &wordVector)
                     oldSize = wordVector[2].size();
                     newSize = oldSize - 1;
                     wordVector[2].resize(newSize);
-                    std::cout << "Table " << wordVector[2] << " deleted.\n";
-
+                    
                     // Now delete wordVector[2] table
+
+                    std::cout << "Table " << wordVector[2] << " deleted.\n";
                }
 
                else {
@@ -362,5 +349,132 @@ void wordDecider(std::vector<std::string> &wordVector)
           std::cout << "Unknown Entry\n";
      }
      
+
+}
+
+/* -----------------------------------------------------------------------------
+FUNCTION:          
+DESCRIPTION:       
+RETURNS:           
+NOTES:             
+------------------------------------------------------------------------------- */
+void createDB(std::string name, std::vector<std::string> &databaseVector, int &dbCount) 
+{    
+
+
+     if (dbCount > 1) {
+          
+          for (auto i = databaseVector.begin(); i != databaseVector.end(); i++) {
+
+               if (*i == name) {
+                    std::cout << "!Failed to create database" << name << "because it already exists.\n";
+               }
+
+               else {
+
+               }
+          }
+     }
+
+     else {
+
+          if (*(databaseVector.begin()) == name) {
+               std::cout << "!Failed to create database" << name << "because it already exists.\n";
+          }
+
+          else {
+               
+               // Now create a database with name by creating a directory in our project
+               const char* dbName = name.c_str();
+                    
+               if (mkdir(dbName, 0777) == -1) {
+                    std::cout << "Error creating Database\n";
+               }
+
+               else {
+
+                    // Add name of database to vector
+                    databaseVector.push_back(dbName);
+                    std::cout << "Database " << dbName << " created.\n";
+               }
+          }
+     }
+
+     
+
+
+
+     
+}
+
+/* -----------------------------------------------------------------------------
+FUNCTION:          
+DESCRIPTION:       
+RETURNS:           
+NOTES:             
+------------------------------------------------------------------------------- */
+void deleteDB(std::string name, std::vector<std::string> &databaseVector, int &dbCount) 
+{         
+     std::string tempName;
+     bool inVector = false;
+
+     if (dbCount > 1) {
+
+     }
+
+
+     // Delete database, removes the corresponding directory string from the vector
+     // by searching for it   
+     for (auto i = databaseVector.begin(); i != databaseVector.end(); i++) {
+          
+          if (*i == name && databaseVector.size() > 1) {
+               inVector = true;
+               tempName = *i;
+               databaseVector.erase(i);
+          }
+
+          else if (*i == name && databaseVector.size() == 1) {
+               inVector = true;
+               tempName = *i;
+               databaseVector.clear();
+          }
+               
+     }
+
+     if (inVector) {
+          
+          // Delete database directory from project directory
+          std::string end(tempName);
+          std::string removalString = "rm -r " + end;
+          system(removalString.c_str());
+          std::cout << "Database " << tempName << " deleted.\n";
+
+     }
+
+     if(!inVector) {
+          std::cout << "!Failed to delete " << name <<  " because it does not exist.\n";
+     }
+         
+}
+
+/* -----------------------------------------------------------------------------
+FUNCTION:          
+DESCRIPTION:       
+RETURNS:           
+NOTES:             
+------------------------------------------------------------------------------- */
+void createTable() 
+{
+     std::vector<Attribute> attributes;
+}
+
+/* -----------------------------------------------------------------------------
+FUNCTION:          
+DESCRIPTION:       
+RETURNS:           
+NOTES:             
+------------------------------------------------------------------------------- */
+void deleteTable() 
+{
 
 }
