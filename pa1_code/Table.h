@@ -10,8 +10,8 @@ Author             Date               Version
 ---------------    ----------         --------------
 Conner Fissell     **-**-2020         1.0  Original version
 ----------------------------------------------------------------------------- */
-#ifndef __pa1Interface_H__
-#define __pa1Interface_H__
+#ifndef __TABLE_H__
+#define __TABLE_H__
 
 #include <iostream>
 #include <fstream>
@@ -27,35 +27,35 @@ Conner Fissell     **-**-2020         1.0  Original version
 #include <unistd.h>
 
 
-class Table {
-     private:
-          std::string tableName;
-          int numOfAttributes;
-          std::vector<Attribute> attributes;
+// class Table {
+//      private:
+//           std::string tableName;
+//           int numOfAttributes;
+//           std::vector<Attribute> attributes;
 
-     public:
+//      public:
 
-          Table();
-          Table(std::string name) {
-               tableName = name;
-          }
+//           Table();
+//           Table(std::string name) {
+//                tableName = name;
+//           }
 
-          void displayTableName() {
-               std::cout << "Table name is: " << tableName << "\n";
-          }
+//           void displayTableName() {
+//                std::cout << "Table name is: " << tableName << "\n";
+//           }
 
-          void insertAttribute(Attribute a) {
-               attributes.push_back(a);
-          }
+//           void insertAttribute(Attribute a) {
+//                attributes.push_back(a);
+//           }
 
-          void displayAttributes(Table table) {
+//           void displayAttributes(Table table) {
 
-               for (int i = 0; i < attributes.size(); i++) {
+//                for (int i = 0; i < attributes.size(); i++) {
                     
-                    table.attributes[i].displayAttribute();
-               }
+//                     table.attributes[i].displayAttribute();
+//                }
                
-          }
+//           }
 
           // friend std::ostream& operator << (std::ostream &stream, Table &table) {
           
@@ -68,21 +68,7 @@ class Table {
 
           
 
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//};
 
 
 
