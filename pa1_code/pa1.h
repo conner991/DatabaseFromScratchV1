@@ -16,9 +16,23 @@ Conner Fissell     **-**-2020         1.0  Original version
 #include "pa1Interface.h"
 
 
-template <class DT>
-class DataEntry {
-     
+
+class Attribute : public Table {
+     private: 
+          std::string attributeName, attributeType;
+
+     public:
+          Attribute();
+          Attribute(std::string name, std::string type) {
+               attributeName = name;
+               attributeType = type;
+          }
+
+          void displayAttribute() {
+               std::cout << attributeName << " " << attributeType;
+          }
+          
+          
 
 };
 

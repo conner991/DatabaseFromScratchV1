@@ -17,13 +17,23 @@ Conner Fissell     02-21-2021         1.0  Original version
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
 #define ARRAY_SIZE(a) sizeof(a) / sizeof(a[0])
 
-// #pragma warning(disable : 4996)
+
+// structs
+struct Database
+{
+     bool inUse;
+     std::string dbName;
+     std::vector<Table> tables;
+};
+
+
 
 // Prototypes
 bool inputParser(std::string inputLine, std::vector<std::string> &wordVector, bool &running);
-void wordDecider(std::vector<std::string> &wordVector, std::vector<std::string> &databaseVector, int &dbCount);
-void createDB(std::string dbName, std::vector<std::string> &databases, int &dbCount);
-void deleteDB(std::string name, std::vector<std::string> &databases, int &dbCount);
+void wordDecider(std::vector<std::string> &wordVector, std::vector<Database> &databaseVector, int &dbCount, int &useCount);
+void createDB(std::string dbName, std::vector<Database> &databases, int &dbCount);
+void deleteDB(std::string name, std::vector<Database> &databases, int &dbCount);
+void useDB(std::string name, std::vector<Database> &databases, int &dbCount, int &useCount);
 void createTable();
 void deleteTable();
 /* -----------------------------------------------------------------------------
@@ -40,18 +50,22 @@ int main(int argc, char* argv[])
 
      bool running = true; 
      int dbCount = 0;
+     int useCount = 0;
      std::string inputLine;
-     std::vector<std::string> wordVector, databaseVector;
+     std::vector<std::string> wordVector;
+     std::vector<Database> databaseVector;
 
      // Enter SQL Mode
      while (running) {
           std::cout << "--> ";
           std::getline(std::cin, inputLine);
+
+          // Parse our input string into vector of word strings
           running = inputParser(inputLine, wordVector, running);
 
           // If .exit was not entered, move forward in program
           if (wordVector.size() != 0) {
-               wordDecider(wordVector, databaseVector, dbCount);
+               wordDecider(wordVector, databaseVector, dbCount, useCount);
           }
           
           // clear vector of input strings after each SQL command
@@ -165,7 +179,7 @@ DESCRIPTION:
 RETURNS:           
 NOTES:             
 ------------------------------------------------------------------------------- */
-void wordDecider(std::vector<std::string> &wordVector, std::vector<std::string> &databaseVector, int &dbCount) 
+void wordDecider(std::vector<std::string> &wordVector, std::vector<Database> &databaseVector, int &dbCount, int &useCount) 
 {    
      int oldSize, newSize;
      char frontOfString;
@@ -183,6 +197,7 @@ void wordDecider(std::vector<std::string> &wordVector, std::vector<std::string> 
      // Check first word in vector to see if it is one of the beginning SQL keywords
      if (wordVector[0] == "create" || wordVector[0] == "drop" || wordVector[0] == "use" || wordVector[0] == "select" || wordVector[0] == "alter") {
           
+          // CREATE DATABASE or TABLE
           if (wordVector[0] == "create") {
                
                // then we're either gonna create a DATABASE or a TABLE (one of those SQL keywords will follow)
@@ -229,7 +244,7 @@ void wordDecider(std::vector<std::string> &wordVector, std::vector<std::string> 
           }
 
 
-
+          // DROP DATABASE or TABLE
           if (wordVector[0] == "drop"){
                
                // Same as "CREATE" except we're either gonna drop a created database or a table
@@ -267,23 +282,25 @@ void wordDecider(std::vector<std::string> &wordVector, std::vector<std::string> 
           }
 
 
-
+          // USE database
           if (wordVector[0] == "use"){
      
-               // Next word after "USE" is a database name with ;
-
+               // Next word after "USE" is a database name 
                // Theres going to be a ";" at the end of our database name that we need to get rid of
                oldSize = wordVector[1].size();
                newSize = oldSize - 1;
                wordVector[1].resize(newSize);
-               std::cout << "Using database " << wordVector[1] << ".\n";
 
                // USE our database wordVector[1] and check to see if we are already using it if this happens again
+               std::string dbName3 = wordVector[1];
+               useDB(dbName3, databaseVector, dbCount, useCount);
+               
+
                
           }
 
 
-
+          // SELECT 
           if (wordVector[0] == "select") {
  
                // SELECT is always going to be followed by an action performed on a table
@@ -319,7 +336,7 @@ void wordDecider(std::vector<std::string> &wordVector, std::vector<std::string> 
           }
 
 
-
+          // ALTER TABLE
           if (wordVector[0] == "alter"){
                
                // Next word after "alter" is only ever going to be a SQL table keyword and that must be a created table
@@ -359,9 +376,10 @@ DESCRIPTION:
 RETURNS:           
 NOTES:             
 ------------------------------------------------------------------------------- */
-void createDB(std::string name, std::vector<std::string> &databaseVector, int &dbCount) 
+void createDB(std::string name, std::vector<Database> &databaseVector, int &dbCount) 
 {    
      bool inVector = false;
+     struct Database db;
 
      // If there are more than 1 database entrys in our vector
      if (dbCount > 1) {
@@ -380,7 +398,7 @@ void createDB(std::string name, std::vector<std::string> &databaseVector, int &d
                const char* dbName = name.c_str();
                     
                if (mkdir(dbName, 0777) == -1) {
-                    std::cout << "Error creating Database\n";
+                    std::cout << "Error creating Database.\n";
                }
 
                else {
@@ -449,7 +467,7 @@ DESCRIPTION:
 RETURNS:           
 NOTES:             
 ------------------------------------------------------------------------------- */
-void deleteDB(std::string name, std::vector<std::string> &databaseVector, int &dbCount) 
+void deleteDB(std::string name, std::vector<Database> &databaseVector, int &dbCount) 
 {         
      std::string tempName1, tempName2;
 
@@ -513,9 +531,78 @@ DESCRIPTION:
 RETURNS:           
 NOTES:             
 ------------------------------------------------------------------------------- */
+void useDB(std::string name, std::vector<Database> &databaseVector, int &dbCount, int &useCount) 
+{
+     bool inVector = false;
+
+     // If there are more than 1 database entrys in our vector
+     if (dbCount > 1) {
+          
+          for (auto i = databaseVector.begin(); i != databaseVector.end(); i++) {
+
+               if (*i == name) {
+                    
+                    if (useCount == 0) {
+
+                         std::cout << "Using database " << name << ".\n";
+                         useCount++;
+                    }
+
+                    else {
+                         std::cout << "!Already using database " << name << ".\n";
+                    }
+
+                    inVector = true;
+                    
+               }
+
+          }
+
+          if (!inVector) {
+               std::cout << "!Database " << name << " has not been created.\n";
+          }
+
+
+     }
+
+     else if (dbCount == 1) {    
+
+          if (databaseVector.front() == name) {
+               
+               if (useCount == 0) {
+
+                    std::cout << "Using database " << name << ".\n";
+                    useCount++;
+               }
+
+               else {
+                    std::cout << "!Already using database " << name << ".\n";
+               }
+
+          }
+
+          else {
+
+               std::cout << "!Database " << name << " has not been created.\n";      
+          }
+     }
+
+     // Our database vector is empty 
+     else {
+          std::cout << "!Database " << name << " has not been created.\n";
+     }
+
+}
+
+/* -----------------------------------------------------------------------------
+FUNCTION:          
+DESCRIPTION:       
+RETURNS:           
+NOTES:             
+------------------------------------------------------------------------------- */
 void createTable() 
 {
-     std::vector<Attribute> attributes;
+     
 }
 
 /* -----------------------------------------------------------------------------
@@ -528,3 +615,4 @@ void deleteTable()
 {
 
 }
+
