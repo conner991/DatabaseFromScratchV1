@@ -21,7 +21,7 @@ Conner Fissell     02-21-2021         1.0  Original version
 
 // Prototypes
 bool inputParser(std::string inputLine, std::vector<std::string> &wordVector, bool &running);
-void wordDecider(std::vector<std::string> &wordVector, std::vector<std::string> &databaseVector);
+void wordDecider(std::vector<std::string> &wordVector, std::vector<std::string> &databaseVector, int &dbCount);
 void createDB(std::string dbName, std::vector<std::string> &databases, int &dbCount);
 void deleteDB(std::string name, std::vector<std::string> &databases, int &dbCount);
 void createTable();
@@ -39,6 +39,7 @@ int main(int argc, char* argv[])
 
 
      bool running = true; 
+     int dbCount = 0;
      std::string inputLine;
      std::vector<std::string> wordVector, databaseVector;
 
@@ -50,7 +51,7 @@ int main(int argc, char* argv[])
 
           // If .exit was not entered, move forward in program
           if (wordVector.size() != 0) {
-               wordDecider(wordVector, databaseVector);
+               wordDecider(wordVector, databaseVector, dbCount);
           }
           
           // clear vector of input strings after each SQL command
@@ -164,9 +165,9 @@ DESCRIPTION:
 RETURNS:           
 NOTES:             
 ------------------------------------------------------------------------------- */
-void wordDecider(std::vector<std::string> &wordVector, std::vector<std::string> &databaseVector) 
+void wordDecider(std::vector<std::string> &wordVector, std::vector<std::string> &databaseVector, int &dbCount) 
 {    
-     int oldSize, newSize, dbCount = 0;
+     int oldSize, newSize;
      char frontOfString;
      
 
@@ -360,30 +361,21 @@ NOTES:
 ------------------------------------------------------------------------------- */
 void createDB(std::string name, std::vector<std::string> &databaseVector, int &dbCount) 
 {    
+     bool inVector = false;
 
-
+     // If there are more than 1 database entrys in our vector
      if (dbCount > 1) {
           
           for (auto i = databaseVector.begin(); i != databaseVector.end(); i++) {
 
                if (*i == name) {
-                    std::cout << "!Failed to create database" << name << "because it already exists.\n";
+                    std::cout << "!Failed to create database " << name << " because it already exists.\n";
+                    inVector = true;
                }
 
-               else {
-
-               }
-          }
-     }
-
-     else {
-
-          if (*(databaseVector.begin()) == name) {
-               std::cout << "!Failed to create database" << name << "because it already exists.\n";
           }
 
-          else {
-               
+          if (!inVector) { 
                // Now create a database with name by creating a directory in our project
                const char* dbName = name.c_str();
                     
@@ -397,12 +389,56 @@ void createDB(std::string name, std::vector<std::string> &databaseVector, int &d
                     databaseVector.push_back(dbName);
                     std::cout << "Database " << dbName << " created.\n";
                }
+
+               dbCount++;
+          }
+
+     }
+
+     else if (dbCount == 1) {    
+
+          if (databaseVector.front() == name) {
+               std::cout << "!Failed to create database " << name << " because it already exists.\n";
+          }
+
+          else {
+
+               // Now create a database with name by creating a directory in our project
+               const char* dbName = name.c_str();
+                    
+               if (mkdir(dbName, 0777) == -1) {
+                    std::cout << "Error creating Database\n";
+               }
+
+               else {
+
+                    // Add name of database to vector
+                    databaseVector.push_back(dbName);
+                    std::cout << "Database " << dbName << " created.\n";
+               }
+
+               dbCount++;
           }
      }
 
-     
+     // Our database vector is empty 
+     else {
+          // Now create a database with name by creating a directory in our project
+          const char* dbName = name.c_str();
+                    
+          if (mkdir(dbName, 0777) == -1) {
+               std::cout << "Error creating Database\n";
+          }
 
+          else {
 
+               // Add name of database to vector
+               databaseVector.push_back(dbName);
+               std::cout << "Database " << dbName << " created.\n";
+          }
+
+          dbCount++;
+     }
 
      
 }
@@ -415,45 +451,59 @@ NOTES:
 ------------------------------------------------------------------------------- */
 void deleteDB(std::string name, std::vector<std::string> &databaseVector, int &dbCount) 
 {         
-     std::string tempName;
-     bool inVector = false;
+     std::string tempName1, tempName2;
 
+     // If we have more than 1 database string in our vector
      if (dbCount > 1) {
-
-     }
-
-
-     // Delete database, removes the corresponding directory string from the vector
-     // by searching for it   
-     for (auto i = databaseVector.begin(); i != databaseVector.end(); i++) {
           
-          if (*i == name && databaseVector.size() > 1) {
-               inVector = true;
-               tempName = *i;
-               databaseVector.erase(i);
-          }
+          // Delete database, removes the corresponding directory string from the vector
+          // by searching for it   
+          for (auto i = databaseVector.begin(); i != databaseVector.end(); i++) {
+          
+               if (*i == name) {
+                    
+                    tempName1 = *i;
+                    databaseVector.erase(i);
 
-          else if (*i == name && databaseVector.size() == 1) {
-               inVector = true;
-               tempName = *i;
-               databaseVector.clear();
-          }
+                    // Delete database directory from project directory
+                    std::string removalString = "rm -r " + tempName1;
+                    system(removalString.c_str());
+                    std::cout << "Database " << tempName1 << " deleted.\n";
+
+                    dbCount--;      
+
+                    break;              
+               }
                
+          }
      }
 
-     if (inVector) {
+     
+     // if dbCount is equal to 1
+     else if (dbCount == 1) {
           
-          // Delete database directory from project directory
-          std::string end(tempName);
-          std::string removalString = "rm -r " + end;
-          system(removalString.c_str());
-          std::cout << "Database " << tempName << " deleted.\n";
+          if (databaseVector.front() == name) {
+               
+               // Delete database directory from project directory
+               databaseVector.clear();
+               std::string removalString = "rm -r " + name;
+               system(removalString.c_str());
+               std::cout << "Database " << name << " deleted.\n";
 
+               dbCount--;
+          }
+
+          else {
+               std::cout << "!Failed to delete database " << name << " because it does not exist.\n";
+          }
+          
      }
 
-     if(!inVector) {
-          std::cout << "!Failed to delete " << name <<  " because it does not exist.\n";
+     // else we are trying to delete an entry from an empty vector.  
+     else {
+          std::cout << "!Failed to delete database " << name << " because it does not exist.\n";
      }
+     
          
 }
 
