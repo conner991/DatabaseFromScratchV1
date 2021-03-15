@@ -10,7 +10,7 @@ Author             Date               Version
 ---------------    ----------         --------------
 Conner Fissell     02-21-2021         1.0  Original version
 ----------------------------------------------------------------------------- */
-#include "Attribute.h"
+#include "Table.h"
 
 
 
@@ -23,7 +23,7 @@ struct Database
 {
      bool inUse = false;
      std::string dbName;
-     //std::vector<Table> tables;
+     std::vector<Table> tables;
 };
 
 

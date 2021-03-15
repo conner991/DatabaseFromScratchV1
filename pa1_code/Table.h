@@ -13,49 +13,38 @@ Conner Fissell     **-**-2020         1.0  Original version
 #ifndef __TABLE_H__
 #define __TABLE_H__
 
-#include <iostream>
-#include <fstream>
-#include <bits/stdc++.h> 
-#include <sys/stat.h> 
-#include <sys/types.h> 
-#include <string>
-#include <cstring>
-#include <cstdlib>
-#include <vector>
-
-#include <stdio.h>
-#include <unistd.h>
+#include "Attribute.h"
 
 
-// class Table {
-//      private:
-//           std::string tableName;
-//           int numOfAttributes;
-//           std::vector<Attribute> attributes;
+class Table : public Attribute {
+     private:
+          std::string tableName;
+          int numOfAttributes;
+          std::vector<Attribute> attributes; 
 
-//      public:
+     public:
 
-//           Table();
-//           Table(std::string name) {
-//                tableName = name;
-//           }
+          Table();
+          Table(std::string name) {
+               tableName = name;
+          }
 
-//           void displayTableName() {
-//                std::cout << "Table name is: " << tableName << "\n";
-//           }
+          void displayTableName() {
+               std::cout << "Table name is: " << tableName << "\n";
+          }
 
-//           void insertAttribute(Attribute a) {
-//                attributes.push_back(a);
-//           }
+          void insertAttribute(Attribute a) {
+               attributes.push_back(a);
+          }
 
-//           void displayAttributes(Table table) {
+          void displayAttributes(Table table) {
 
-//                for (int i = 0; i < attributes.size(); i++) {
+               for (int i = 0; i < attributes.size(); i++) {
                     
-//                     table.attributes[i].displayAttribute();
-//                }
+                    table.attributes[i].displayAttribute();
+               }
                
-//           }
+          }
 
           // friend std::ostream& operator << (std::ostream &stream, Table &table) {
           
@@ -68,7 +57,7 @@ Conner Fissell     **-**-2020         1.0  Original version
 
           
 
-//};
+};
 
 
 

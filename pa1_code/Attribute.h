@@ -13,28 +13,40 @@ Conner Fissell     **-**-2020         1.0  Original version
 #ifndef __ATTRIBUTE_H__
 #define __ATTRIBUTE_H__
 
-#include "Table.h"
+#include <iostream>
+#include <fstream>
+#include <bits/stdc++.h> 
+#include <sys/stat.h> 
+#include <sys/types.h>
+#include <string>
+#include <cstring>
+#include <cstdlib>
+#include <vector>
+
+#include <stdio.h>
+#include <unistd.h>
 
 
 
-// class Attribute : public Table {
-//      private: 
-//           std::string attributeName, attributeType;
 
-//      public:
-//           Attribute();
-//           Attribute(std::string name, std::string type) {
-//                attributeName = name;
-//                attributeType = type;
-//           }
+class Attribute {
+     private: 
+          std::string attributeName, attributeType;
 
-//           void displayAttribute() {
-//                std::cout << attributeName << " " << attributeType;
-//           }
+     public:
+          Attribute();
+          Attribute(std::string name, std::string type) {
+               attributeName = name;
+               attributeType = type;
+          }
+
+          void displayAttribute() {
+               std::cout << attributeName << " " << attributeType;
+          }
           
           
 
-// };
+};
 
 
 
