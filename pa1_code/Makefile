@@ -21,4 +21,4 @@
 
 
 clean:
-	rm -f pa1Driver
+	rm -f dbDriver

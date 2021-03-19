@@ -33,7 +33,7 @@ class Table : public Attribute {
                std::cout << "Table name is: " << tableName << "\n";
           }
 
-          void insertAttribute(Attribute a) {
+          void addAttribute(Attribute a) {
                attributes.push_back(a);
           }
 

@@ -34,8 +34,8 @@ void wordDecider(std::vector<std::string> &wordVector, std::vector<Database> &da
 void createDB(std::string dbName, std::vector<Database> &databases, int &dbCount);
 void deleteDB(std::string name, std::vector<Database> &databases, int &dbCount);
 void useDB(std::string name, std::vector<Database> &databases, int &dbCount);
-void createTable();
-void deleteTable();
+void createTable(std::string name, std::vector<std::string> &wordVector, std::vector<Database> &databaseVector);
+void dropTable();
 /* -----------------------------------------------------------------------------
 FUNCTION:          
 DESCRIPTION:       
@@ -211,21 +211,21 @@ void wordDecider(std::vector<std::string> &wordVector, std::vector<Database> &da
 
                // CREATE TABLE
                else if (wordVector[1] == "table") {
-                    
-                    // Create tbl_x out of wordVector[2]
-
-                    std::cout << "Table " << wordVector[2] << " created.\n";
 
                     // Check if there is a "(" following tbl_x
                     frontOfString = wordVector[3].front();
-                    if (frontOfString == '('){
-                         std::cout << "reading a parenthetical statement\n";
+                    if (frontOfString == '(') {
+                         
+                         // Create tbl_x out of wordVector[2]
+                         std::cout << "Table " << wordVector[2] << " created.\n";
+                         std::string table1 = wordVector[2];
+                         createTable(table1, wordVector, databaseVector);
                          
                          // now to work on the attributes = ax within parenthesis
                     }
 
                     else {
-                         std::cout << "parenthetical expression must follow tbl_x\n";
+                         std::cout << "parenthetical expression must follow tbl creation statement\n";
                     }
 
                     
@@ -595,8 +595,63 @@ DESCRIPTION:
 RETURNS:           
 NOTES:             
 ------------------------------------------------------------------------------- */
-void createTable() 
-{
+void createTable(std::string tableName, std::vector<std::string> &wordVector, std::vector<Database> &databaseVector) 
+{    
+     int count = 0, tableExpressionSize, oldSize, newSize   ;
+     int totalVectorSize = wordVector.size();
+     std::string attName, attDT;
+
+     // Check for a database thats in use
+     for (int i = 0; i < databaseVector.size(); i++) {
+          
+          if (databaseVector[i].inUse == true) {
+               
+               // then create table for this database
+
+               // create table object and name it
+               Table newTable(tableName);
+               
+               //databaseVector[i].tables.push_back()
+
+               // go through wordVector of strings and create attributes
+               for (int j = 0; j < wordVector.size(); j++) {
+                    
+                    count++;
+
+                    if (wordVector[j].front() == '(') {
+                         
+                         // Need to get rid of the ( at the beginning of first attribute name
+                         wordVector[j].erase(0, 1);
+
+                         // Store in attName
+                         attName = wordVector[j];
+
+                         // Now get attribute datatype, have to take off the , at the end
+                         oldSize = wordVector[j + 1].size();
+                         newSize = oldSize - 1;
+                         wordVector[j + 1].resize(newSize);
+
+                         // Store in attDT
+                         attDT = wordVector[j + 1];
+
+                         // Create Attribute object and add attribute name and datatype to Attribute object
+                         Attribute attribute(attName, attDT);
+
+                         // Now add attribute to the Table object
+                         newTable.addAttribute(attribute);
+                         
+                    }
+
+               }
+
+          }
+
+          else {
+               
+               // Must be using a database in order to create a table 
+               std::cout << "Failed to create table because there is no Database in use.\n";
+          }
+     }
      
 }
 
@@ -606,7 +661,7 @@ DESCRIPTION:
 RETURNS:           
 NOTES:             
 ------------------------------------------------------------------------------- */
-void deleteTable() 
+void dropTable() 
 {
 
 }
