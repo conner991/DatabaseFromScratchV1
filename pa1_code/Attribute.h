@@ -34,14 +34,20 @@ class Attribute {
           std::string attributeName, attributeType;
 
      public:
-          Attribute();
+          Attribute() {};
+          ~Attribute() {};
           Attribute(std::string name, std::string type) {
                attributeName = name;
                attributeType = type;
           }
 
+          void createAttribute(std::string name, std::string type) {
+               attributeName = name;
+               attributeType = type;
+          }
+
           void displayAttribute() {
-               std::cout << attributeName << " " << attributeType;
+               std::cout << attributeName << " " << attributeType << std::endl;
           }
           
           

@@ -17,7 +17,7 @@
 #	any stand alone ".cpp" source file
 #	Usage: e.g. make hello
 .cpp:
-	g++ -o $* $*.cpp -std=c++17
+	g++ -o $* $*.cpp -std=c++11
 
 
 clean:

@@ -24,7 +24,8 @@ class Table : public Attribute {
 
      public:
 
-          Table();
+          Table() {};
+          ~Table() {};
           Table(std::string name) {
                tableName = name;
           }
@@ -37,11 +38,11 @@ class Table : public Attribute {
                attributes.push_back(a);
           }
 
-          void displayAttributes(Table table) {
+          void displayAttributes() {
 
                for (int i = 0; i < attributes.size(); i++) {
                     
-                    table.attributes[i].displayAttribute();
+                    attributes[i].displayAttribute();
                }
                
           }
