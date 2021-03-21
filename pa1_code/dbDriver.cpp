@@ -541,8 +541,11 @@ void useDB(std::string name, std::vector<Database> &databaseVector, int &dbCount
 
      // If there are more than 1 database entrys in our vector
      if (dbCount > 1) {
-          
+     
           for (int i = 0; i < databaseVector.size(); i++) {
+
+               // Set all database inUse booleans to false, to reset so we can swtich between them
+               databaseVector[i].inUse = false;
 
                if (databaseVector[i].dbName == name && databaseVector[i].inUse == false) {
                     
