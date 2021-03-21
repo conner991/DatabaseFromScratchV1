@@ -47,7 +47,11 @@ class Attribute {
           }
 
           void displayAttribute() {
-               std::cout << attributeName << " " << attributeType << std::endl;
+               std::cout << attributeName << " " << attributeType;
+          }
+
+          std::string getName() {
+               return attributeName;
           }
           
           
